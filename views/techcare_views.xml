@@ -1,0 +1,129 @@
+<odoo>
+    <data>
+        <!-- Announcement Views -->
+        <record id="view_techcare_announcement_list" model="ir.ui.view">
+            <field name="name">techcare.announcement.list</field>
+            <field name="model">techcare.announcement</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="title"/>
+                    <field name="date_posted"/>
+                    <field name="is_active"/>
+                    <field name="specialist_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_techcare_announcement_form" model="ir.ui.view">
+            <field name="name">techcare.announcement.form</field>
+            <field name="model">techcare.announcement</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="title"/>
+                            <field name="content"/>
+                            <field name="date_posted"/>
+                            <field name="is_active"/>
+                            <field name="specialist_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Appointment Views -->
+        <record id="view_techcare_appointment_list" model="ir.ui.view">
+            <field name="name">techcare.appointment.list</field>
+            <field name="model">techcare.appointment</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="patient_name"/>
+                    <field name="appointment_date"/>
+                    <field name="specialist_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_techcare_appointment_form" model="ir.ui.view">
+            <<field name="name">techcare.appointment.form</field>
+            <field name="model">techcare.appointment</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="patient_name"/>
+                            <field name="appointment_date"/>
+                            <field name="specialist_id"/>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_techcare_appointment_search" model="ir.ui.view">
+            <field name="name">techcare.appointment.search</field>
+            <field name="model">techcare.appointment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <filter name="date_filter" string="Appointment Date" domain="[('appointment_date', '>=', context_today())]"/>
+                    <filter name="specialist_filter" string="Specialist" domain="[('specialist_id', '=', user.id)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Dashboard Views -->
+        <record id="view_techcare_dashboard" model="ir.ui.view">
+            <field name="name">techcare.dashboard</field>
+            <field name="model">techcare.announcement</field>
+            <field name="arch" type="xml">
+                <dashboard>
+                    <group>
+                        <graph type="bar" string="Announcements">
+                            <field name="date_posted"/>
+                            <field name="title"/>
+                        </graph>
+                        <graph type="bar" string="Appointments">
+                            <field name="appointment_date"/>
+                            <field name="patient_name"/>
+                        </graph>
+                    </group>
+                </dashboard>
+            </field>
+        </record>
+
+        <!-- Mail Template -->
+        <record id="email_template_appointment_confirmation" model="mail.template">
+            <field name="name">Appointment Confirmation</field>
+            <field name="model_id" ref="model_techcare_appointment"/>
+            <field name="subject">Appointment Confirmation for ${object.patient_name}</field>
+            <field name="email_from">${(user.email or '')|safe}</field>
+            <field name="email_to">${object.specialist_id.email}</field>
+            <field name="body_html">
+                <![CDATA[
+                <p>Hello ${object.patient_name},</p>
+                <p>Your appointment has been confirmed for ${object.appointment_date}.</p>
+                <p>Best regards,</p>
+                <p>TechCare Team</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="action_techcare_announcements" model="ir.actions.act_window">
+            <field name="name">Announcements</field>
+            <field name="res_model">techcare.announcement</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_techcare_appointments" model="ir.actions.act_window">
+            <field name="name">Appointments</field>
+            <field name="res_model">techcare.appointment</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="menu_techcare_announcements" name="Announcements" action="action_techcare_announcements"/>
+        <menuitem id="techcare_appointment_menu" name="Appointments" parent="menu_techcare_announcements" action="action_techcare_appointments"/>
+    </data>
+</odoo>
